@@ -29,11 +29,11 @@ class OfflineAnalysisANS:
 
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
       
-        pathlib_input = isinstance(data_path, pathlib.Path)
+        pathlib_input = isinstance(data_path, Path)
         str_input = isinstance(data_path, str)
         if not (pathlib_input or str_input):
             raise TypeError(BAD_PATH_TYPE_MESSAGE.format(value=data_path))
-        elif not pathlib.Path(data_path).exists():
+        elif not Path(data_path).exists():
             raise ValueError(
                 DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_path))
         else:
@@ -51,7 +51,7 @@ class OfflineAnalysisANS:
         else:
             self.time_window = time_window
 
-        weights_tuple = isinstance(sample_rate, tuple)
+        weights_tuple = isinstance( weights, tuple)
         if not weights_tuple:
             raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
         else:
