@@ -4,8 +4,10 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 import neurokit2 as nk
-
 from pandas.core.frame import DataFrame
+
+BAD_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted."
+DIRECTORY_NOT_EXISTING_MESSAGE = "Invalide input: ({value})! Directory doesn't exist."
 
 class OfflineAnalysisANS:
     """
@@ -15,9 +17,16 @@ class OfflineAnalysisANS:
     conforms with the larger data processing pipeline of this project.
     """
 
-
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
-        self.data_path = data_path
+        pathlib_input = isinstance(data_fname, pathlib.Path)
+        str_input = isinstance(data_fname, str)
+        if not (pathlib_input or str_input):
+            raise TypeError(BAD_TYPE_MESSAGE.format(value=data_fname))
+        elif not pathlib.Path(data_fname).exists():
+            raise ValueError(
+                DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_fname))
+        else:
+            self.data_path = data_path
         self.sampe_rate = sample_rate
         self.time_window = time_window
         self.weights = weights
@@ -72,9 +81,7 @@ class OfflineAnalysisANS:
         parm:
         return:
         """
-        self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] 
-                                        + self.normal_data["GSR"]*wights[1] 
-                                        + self.normal_data["RESP"]*wights[2]
+        self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] + self.normal_data["GSR"]*wights[1] + self.normal_data["RESP"]*wights[2]
         self.scored_data = self.normal_data.copy()
 
 
