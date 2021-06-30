@@ -14,3 +14,17 @@ def test_data_attr_is_df():
     q = OfflineAnalysisANS(fname)
     q.read_data()
     assert isinstance(q.raw_data, pd.DataFrame)
+
+def test_processed_HR_length():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.heart_rate()
+    assert len(self.hr) == len(self.raw_data)/self.n_samples
+
+def test_processed_RESP_length():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.resp_rate()
+    assert len(self.resp) == len(self.raw_data)/self.n_samples
