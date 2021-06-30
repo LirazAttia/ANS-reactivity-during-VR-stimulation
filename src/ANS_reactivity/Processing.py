@@ -22,10 +22,10 @@ class OfflineAnalysisANS:
     conforms with the larger data processing pipeline of this project.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, data_path: Path) -> None:
         self.path = Path(data_path)
 
-    def read_data(self, data_path: Path) -> DataFrame:
+    def read_data(self) -> DataFrame:
         """ Pulling and reading the data into Dataframe.
         parm:
         return:
