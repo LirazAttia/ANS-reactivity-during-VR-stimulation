@@ -20,13 +20,13 @@ class OfflineAnalysisANS:
     """
 
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
-        pathlib_input = isinstance(data_fname, pathlib.Path)
-        str_input = isinstance(data_fname, str)
+        pathlib_input = isinstance(data_path, Path)
+        str_input = isinstance(data_path, str)
         if not (pathlib_input or str_input):
-            raise TypeError(BAD_TYPE_MESSAGE.format(value=data_fname))
-        elif not pathlib.Path(data_fname).exists():
+            raise TypeError(BAD_TYPE_MESSAGE.format(value=data_path))
+        elif not Path(data_path).exists():
             raise ValueError(
-                DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_fname))
+                DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_path))
         else:
             self.data_path = data_path
         self.sample_rate = sample_rate
@@ -79,9 +79,9 @@ class OfflineAnalysisANS:
             columns=["TIME", "ECG", "RESP", "GSR"])
        
         self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
-        self.processed_data["ECG"] = self.hr
-        self.processed_data["RESP"] = self.rsp
-        self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
+        self.processed_data["ECG"] = self.ecg
+        self.processed_data["RESP"] = self.resp
+        self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//self.n_samples).mean()
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
         """ normalazing each column.
@@ -103,4 +103,4 @@ class OfflineAnalysisANS:
         self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] + self.normal_data["GSR"]*wights[1] + self.normal_data["RESP"]*wights[2]
         self.scored_data = self.normal_data.copy()
 
-    def_plot_stress_score()
+    #def_plot_stress_score()
