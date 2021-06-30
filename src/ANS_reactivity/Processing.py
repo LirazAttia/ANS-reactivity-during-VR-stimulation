@@ -15,18 +15,18 @@ class OfflineAnalysisANS:
     conforms with the larger data processing pipeline of this project.
     """
 
+
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
         self.data_path = data_path
         self.sampe_rate = sample_rate
         self.time_window = time_window
         self.weights = weights
-
-    def read_data(self, data_path: Path) -> DataFrame:
+        
+    def read_data(self) -> DataFrame:
         """ Pulling and reading the data into Dataframe.
         parm:
         return:
         """
-        self.path = Path(data_path)
         self.raw_data = pd.read_csv(self.path)
 
     def heart_rate(ecg, n_samples):

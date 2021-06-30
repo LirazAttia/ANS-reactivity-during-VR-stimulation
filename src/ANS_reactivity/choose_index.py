@@ -25,7 +25,10 @@ def index_trying(normal_data: DataFrame) -> DataFrame:
     print(wights)
     normal_data["Fear_Index"] = normal_data["ECG"]*wights[0] + normal_data["GSR"]*wights[1] +normal_data["RESP"]*wights[2]
     processed_data = normal_data.copy()
-    std = processed_data["Fear_Index"].std()
+    max = processed_data["Fear_Index"].max()
+    min = processed_data["Fear_Index"].min()
+    std = max - min
+    #std = processed_data["Fear_Index"].std()
     return std, wights
 
 def std_collecting(normal_data: DataFrame, n_sample: int = 10000):

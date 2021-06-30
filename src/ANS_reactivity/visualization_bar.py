@@ -1,4 +1,4 @@
-
+from Processing import *
 import random
 import numpy as np
 from itertools import count
@@ -28,9 +28,15 @@ def plot_me():
     ax.set_title('Real time Data')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    ax.set_ylim([0, 100])
+    ax.set_ylim([0, 1.2])
 
-
+def averaging_samples(row_data: DataFrame, n_samples_for_averging: int = 10) -> DataFrame:
+    """ averaging serval sampels in each column.
+    parm:
+    return:
+    """
+    avg_data = row_data.groupby(np.arange(len(row_data))//n_samples_for_averging).mean() #####
+    return avg_data
 
 ##########################################
 
@@ -39,42 +45,35 @@ index = count()
 x_width = 20
 data_range = 1200
 start_sample = 20
-bar_colors = ["r", "k", "g"]
+bar_colors = ["r", "k", "g", "b"]
+labels = ["ECG", "GSR", "RESP" , "Fear_Index"]
+fear_values = [0.5, 0.5, 0.5, 0.5]
+x = np.arange(len(labels))
+width = 0.35
 
 
+if __name__ == "__main__":
+    row_data = read_data(data_path)
+    avg_data = averaging_samples(row_data, n_samples_for_averging = 100)
+    normal_data = normalizing_values(avg_data)
+    processed_data = index_adding(normal_data, wights)
 
-labels = ['HR', 'GSR', 'RR']
-fear_values = [50, 50, 30]
-#women_means = [25, 32, 34, 20, 25]
 
-x = np.arange(len(labels))  # the label locations
-width = 0.35  # the width of the bars
-
-plt.ion()
-fig, ax = plt.subplots()
-rects1 = ax.bar(x - width/2, fear_values, width, label='Fear_Level', color = bar_colors)
-#rects2 = ax.bar(x + width/2, women_means, width, label='Women')
-
-# Add some text for labels, title and custom x-axis tick labels, etc.
-plot_me()
-#ax.legend()
-
-ax.bar_label(rects1)#, padding=3)
-#ax.bar_label(rects2, padding=3)
-
-#fig.tight_layout()
-
-for i in range(data_range):
-    print("LOOP")
-    plt.cla()
-    fear_values = value_creator(fear_values)
+    plt.ion()
+    fig, ax = plt.subplots()
     rects1 = ax.bar(x - width/2, fear_values, width, label='Fear_Level', color = bar_colors)
     plot_me()
-    #y  = axis_creator(y, x_width)
-    #line1.set_xdata(measurement_labels)
-    #ax.set_yscale(y)
-    #figure.tight_layout()
-    fig.canvas.draw()
-    fig.canvas.flush_events()
-    time.sleep(0.5)
+    ax.bar_label(rects1)
+
+    
+    for i in range(1000):
+        real_time_data = processed_data.iloc[i, :]
+        print(real_time_data)
+        plt.cla()
+        fear_values = [real_time_data["ECG"], real_time_data["GSR"], real_time_data["RESP"], real_time_data["Fear_Index"]]
+        rects1 = ax.bar(x - width/2, fear_values, width, label='Fear_Level', color = bar_colors)
+        plot_me()
+        fig.canvas.draw()
+        fig.canvas.flush_events()
+        time.sleep(0.1)
 
