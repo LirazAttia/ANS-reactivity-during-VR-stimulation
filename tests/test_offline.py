@@ -4,10 +4,28 @@ import pytest
 
 from Processing import *
 
-def test_wrong_input_type():
+def test_wrong_input_type_path():
     fname = 2
     with pytest.raises(TypeError):
-        q = OfflineAnalysisANS(pathlib.Path(fname))
+        q = OfflineAnalysisANS(fname)
+
+def test_wrong_input_type_weigths():
+    fname = 'Data.csv'
+    weights = 2
+    with pytest.raises(TypeError):
+        q = OfflineAnalysisANS(fname, weights=weights)
+
+def test_wrong_input_type_sample_rate():
+    fname = 'Data.csv'
+    sample_rates = 'kjhig'
+    with pytest.raises(TypeError):
+        q = OfflineAnalysisANS(fname, sample_rate=sample_rate)
+
+def test_wrong_input_type_time_window():
+    fname = 'Data.csv'
+    time_window = 'kjhig'
+    with pytest.raises(TypeError):
+        q = OfflineAnalysisANS(fname, time_window=time_window)
 
 def test_data_attr_is_df():
     fname = 'Data.csv'
