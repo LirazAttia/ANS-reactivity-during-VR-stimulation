@@ -3,16 +3,9 @@
 import numpy as np
 import pandas as pd
 from pathlib import Path
+import neurokit2 as nk
 
 from pandas.core.frame import DataFrame
-
-# Defenitions
-n_samples_for_averging : int = 100
-wights: tuple = (0.333, 0.333, 0.333)
-data_path = Path(r"C:\Users\Anthony\Desktop\extra\Data.csv")
-
-
-#####################################################################################
 
 class OfflineAnalysisANS:
     """
@@ -22,9 +15,13 @@ class OfflineAnalysisANS:
     conforms with the larger data processing pipeline of this project.
     """
 
-    def __init__(self, data_path: Path) -> None:
-        self.path = Path(data_path)
 
+    def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
+        self.data_path = data_path
+        self.sampe_rate = sample_rate
+        self.time_window = time_window
+        self.weights = weights
+        
     def read_data(self) -> DataFrame:
         """ Pulling and reading the data into Dataframe.
         parm:
