@@ -18,7 +18,7 @@ class OfflineAnalysisANS:
 
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
         self.data_path = data_path
-        self.sampe_rate = sample_rate
+        self.sample_rate = sample_rate
         self.time_window = time_window
         self.weights = weights
         
@@ -29,15 +29,17 @@ class OfflineAnalysisANS:
         """
         self.raw_data = pd.read_csv(self.path)
 
-    def heart_rate(ecg, n_samples):
+    def heart_rate(self, ecg):
         #Extracts heart rate from raw ECG data
         pass
 
-    def resp_rate(breaths, n_samples):
+    def resp_rate(self, resp):
         # Extracts breathing rate from raw respiration data
-        pass
-
-    def process_samples(self, n_samples: int = 10) -> DataFrame:
+        rsp_cleaned = nk.rsp_clean(resp)
+        rsp_rate = nk.rsp_rate(rsp_cleaned, sampling_rate = self.sample_rate, window = self.time_window)
+        return rsp_rate
+        
+    def process_samples(self) -> DataFrame:
         """ averaging serval sampels in each column.
         param:
         returns:
@@ -49,10 +51,12 @@ class OfflineAnalysisANS:
 
         self.processed_data = pd.DataFrame(
             columns=["time", "heart_rate", "resp_rate", "gsr"])
+
+        n_samples = self.time_window*self.sample_rate
         
         self.processed_data["time"] = self.time.iloc[0:-1:n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
-        self.processed_data["heart_rate"] = heart_rate(self.ecg, n_samples)
-        self.processed_data["resp_rate"] = resp_rate(self.resp, n_samples)
+        self.processed_data["heart_rate"] = heart_rate(self.ecg)
+        self.processed_data["resp_rate"] = resp_rate(self.resp)
         self.processed_data["gsr"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
