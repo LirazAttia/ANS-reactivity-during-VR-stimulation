@@ -29,8 +29,6 @@ class OfflineAnalysisANS:
                 DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_fname))
         else:
             self.data_path = data_path
-        self.sampe_rate = sample_rate
-        self.data_path = data_path
         self.sample_rate = sample_rate
         self.time_window = time_window
         self.weights = weights
@@ -41,7 +39,7 @@ class OfflineAnalysisANS:
         parm:
         return:
         """
-        self.raw_data = pd.read_csv(self.path)
+        self.raw_data = pd.read_csv(self.data_path)
 
     
     def heart_rate(self):
@@ -81,14 +79,12 @@ class OfflineAnalysisANS:
         self.gsr = self.raw_data["GSR"]
 
         self.processed_data = pd.DataFrame(
-            columns=["time", "heart_rate", "resp_rate", "gsr"])
-
-        n_samples = self.time_window*self.sample_rate
-        
-        self.processed_data["time"] = self.time.iloc[0:-1:n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
-        self.processed_data["heart_rate"] = heart_rate()
-        self.processed_data["resp_rate"] = resp_rate()
-        self.processed_data["gsr"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
+            columns=["TIME", "ECG", "RESP", "GSR"])
+       
+        self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
+        self.processed_data["ECG"] = heart_rate()
+        self.processed_data["RESP"] = resp_rate()
+        self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
         """ normalazing each column.
@@ -110,19 +106,4 @@ class OfflineAnalysisANS:
         self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] + self.normal_data["GSR"]*wights[1] + self.normal_data["RESP"]*wights[2]
         self.scored_data = self.normal_data.copy()
 
-
-
-if __name__ == "__main__":
-
-    row_data = read_data(data_path)
-    print("Row data\n",row_data) ######
-    avg_data = averaging_samples(row_data, n_samples_for_averging)
-    print("AVG data\n",avg_data) ######
-    normal_data = normalizing_values(avg_data)
-    print("Normal data\n", normal_data)
-    processed_data = index_adding(normal_data, wights)
-    print("Processed data\n",processed_data)
-
-
-
-
+    def_plot_stress_score()
