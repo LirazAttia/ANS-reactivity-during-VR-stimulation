@@ -22,12 +22,14 @@ class OfflineAnalysisANS:
     conforms with the larger data processing pipeline of this project.
     """
 
+    def __init__(self) -> None:
+        self.path = Path(data_path)
+
     def read_data(self, data_path: Path) -> DataFrame:
         """ Pulling and reading the data into Dataframe.
         parm:
         return:
         """
-        self.path = Path(data_path)
         self.raw_data = pd.read_csv(self.path)
 
     def heart_rate(ecg, n_samples):
