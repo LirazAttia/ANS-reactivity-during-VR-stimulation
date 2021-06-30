@@ -20,20 +20,20 @@ class OfflineAnalysisANS:
     """
 
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
-        pathlib_input = isinstance(data_fname, pathlib.Path)
-        str_input = isinstance(data_fname, str)
+        pathlib_input = isinstance(data_path, pathlib.Path)
+        str_input = isinstance(data_path, str)
         if not (pathlib_input or str_input):
-            raise TypeError(BAD_TYPE_MESSAGE.format(value=data_fname))
-        elif not pathlib.Path(data_fname).exists():
+            raise TypeError(BAD_TYPE_MESSAGE.format(value=data_path))
+        elif not pathlib.Path(data_path).exists():
             raise ValueError(
-                DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_fname))
+                DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_path))
         else:
             self.data_path = data_path
         self.sample_rate = sample_rate
         self.time_window = time_window
         self.weights = weights
         self.n_samples = self.time_window*self.sample_rate
-        
+
     def read_data(self) -> DataFrame:
         """ Pulling and reading the data into Dataframe.
         parm:
@@ -41,9 +41,8 @@ class OfflineAnalysisANS:
         """
         self.raw_data = pd.read_csv(self.data_path)
 
-    
     def heart_rate(self):
-        #Extracts heart rate from raw ECG data
+        # Extracts heart rate from raw ECG data
 
         number_of_chunks = (len(self.ecg))//self.n_samples
         heart_rate_for_every_chunk = np.zeros(number_of_chunks)
@@ -58,9 +57,8 @@ class OfflineAnalysisANS:
                     heart_rate_for_every_chunk[data_chunks] = np.NaN
                 else:
                     heart_rate_for_every_chunk[data_chunks] = heart_rate_for_every_chunk[data_chunks-1]
-     
-        self.hr = heart_rate_for_every_chunk
 
+        self.hr = heart_rate_for_every_chunk
 
     def resp_rate(self):
         # Extracts breathing rate from raw respiration data
@@ -77,7 +75,7 @@ class OfflineAnalysisANS:
 
         self.processed_data = pd.DataFrame(
             columns=["TIME", "ECG", "RESP", "GSR"])
-       
+
         self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
         self.processed_data["ECG"] = self.hr
         self.processed_data["RESP"] = self.rsp
@@ -94,7 +92,6 @@ class OfflineAnalysisANS:
             self.processed_data[column] = (self.processed_data[column]-min)/max
         self.normal_data = self.processed_data.copy()
 
-
     def score_adding(self, wights: tuple = (0.333, 0.333, 0.333)) -> DataFrame:
         """ making an index according to wights.
         parm:
@@ -103,4 +100,4 @@ class OfflineAnalysisANS:
         self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] + self.normal_data["GSR"]*wights[1] + self.normal_data["RESP"]*wights[2]
         self.scored_data = self.normal_data.copy()
 
-    def_plot_stress_score()
+    def plot_stress_score(self):
