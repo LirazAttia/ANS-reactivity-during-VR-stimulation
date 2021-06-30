@@ -21,18 +21,35 @@ class OfflineAnalysisANS:
     """
 
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
-        pathlib_input = isinstance(data_path, Path)
+      
+        pathlib_input = isinstance(data_path, pathlib.Path)
         str_input = isinstance(data_path, str)
         if not (pathlib_input or str_input):
-            raise TypeError(BAD_TYPE_MESSAGE.format(value=data_path))
-        elif not Path(data_path).exists():
+            raise TypeError(BAD_PATH_TYPE_MESSAGE.format(value=data_path))
+        elif not pathlib.Path(data_path).exists():
             raise ValueError(
                 DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_path))
         else:
             self.data_path = data_path
-        self.sample_rate = sample_rate
-        self.time_window = time_window
-        self.weights = weights
+        
+        sample_rate_int = isinstance(sample_rate, int)
+        if not sample_rate_int:
+            raise TypeError(BAD_SAMPLE_RATE_TYPE_MESSAGE.format(value=sample_rate))
+        else:
+            self.sample_rate = sample_rate
+        
+        time_window_int = isinstance(time_window, int)
+        if not time_window_int:
+            raise TypeError(BAD_TIME_WINDOW_TYPE_MESSAGE.format(value=sample_rate))
+        else:
+            self.time_window = time_window
+
+        weights_tuple = isinstance(sample_rate, tuple)
+        if not weights_tuple:
+            raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
+        else:
+            self.weights = weights
+            
         self.n_samples = self.time_window*self.sample_rate
         
     def read_data(self) -> DataFrame:
