@@ -10,7 +10,11 @@ pd.options.mode.use_inf_as_na = True
 
 BAD_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted."
 DIRECTORY_NOT_EXISTING_MESSAGE = "Invalide input: ({value})! Directory doesn't exist."
-
+HAVE_TO_BE_TUPLE_MESSAGE = "Invalid input: ({value})! Have to be tuple"
+TUPLE_LENGTH_MESSAGE  = "Invalid input: Length mismatch: lenght of tuple must be 3 (not {value})."
+TUPLE_SUM_MESSAGE = "Invalid input: The sum of the values must be 1 (not {value})."
+TUPLE_NEGATIVE_MESSAGE = "Invalid input: ({value})! tuple values must be positive."
+VALUES_ARE_NOT_NUMBERS_MESSAGE = "Invalid input: ({value})! tuple values must be type int or float."
 
 class OfflineAnalysisANS:
     """
@@ -98,12 +102,23 @@ class OfflineAnalysisANS:
         self.normal_data = self.processed_data.copy()
 
 
-    def score_adding(self, wights: tuple = (0.333, 0.333, 0.333)) -> DataFrame:
+    def score_adding(self, wights: tuple = (0.333, 0.333, 0.334)) -> DataFrame:
         """ making an index according to wights.
         parm:
         return:
         """
-        self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] + self.normal_data["GSR"]*wights[1] + self.normal_data["RESP"]*wights[2]
-        self.scored_data = self.normal_data.copy()
+        if not isinstance(wights, tuple):
+            raise TypeError(HAVE_TO_BE_TUPLE_MESSAGE.format(value=wights))
+        elif len(wights) != 3:
+            raise ValueError(TUPLE_LENGTH_MESSAGE.format(value=len(wights)))
+        elif not (isinstance(wights[0], (int, float)) and isinstance(wights[1], (int, float)) and isinstance(wights[2], (int, float))):
+            raise TypeError(VALUES_ARE_NOT_NUMBERS_MESSAGE.format(value=wights))
+        elif sum(list(wights)) != 1:
+            raise ValueError(TUPLE_SUM_MESSAGE.format(value=sum(list(wights))))
+        elif not (wights[0] >=0 and wights[1] >=0 and wights[2] >=0):
+            raise ValueError(TUPLE_NEGATIVE_MESSAGE.format(value=wights))
+        else:
+            self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] + self.normal_data["GSR"]*wights[1] + self.normal_data["RESP"]*wights[2]
+            self.scored_data = self.normal_data.copy()
 
     #def_plot_stress_score()
