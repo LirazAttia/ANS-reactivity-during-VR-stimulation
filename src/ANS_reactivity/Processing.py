@@ -8,9 +8,11 @@ import heartpy as hp
 from pandas.core.frame import DataFrame
 pd.options.mode.use_inf_as_na = True
 
-BAD_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted."
+BAD_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted as data_path."
 DIRECTORY_NOT_EXISTING_MESSAGE = "Invalide input: ({value})! Directory doesn't exist."
-
+BAD_SAMPLE_RATE_TYPE_MESSAGE = "Invalid input: ({value})! Only ints are accepted as sample_rate."
+BAD_TIME_WINDOW_TYPE_MESSAGE = "Invalid input: ({value})! Only ints are accepted as time_window."
+BAD_WEIGHTS_TYPE_MESSAGE = "Invalid input: ({value})! Only tuples( , , ) are accepted as weights."
 
 class OfflineAnalysisANS:
     """
@@ -49,7 +51,7 @@ class OfflineAnalysisANS:
             raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
         else:
             self.weights = weights
-            
+
         self.n_samples = self.time_window*self.sample_rate
         
     def read_data(self) -> DataFrame:
