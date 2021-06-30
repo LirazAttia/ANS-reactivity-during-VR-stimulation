@@ -28,3 +28,17 @@ def test_processed_RESP_length():
     q.read_data()
     q.resp_rate()
     assert len(self.resp) == len(self.raw_data)/self.n_samples
+
+def test_processed_GSR_length():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    assert len(self.GSR) == len(self.raw_data)/self.n_samples
+
+def test_processed_TIME_length():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    assert len(self.GSR) == len(self.raw_data)/self.n_samples
