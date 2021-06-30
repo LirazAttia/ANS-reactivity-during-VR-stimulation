@@ -6,6 +6,7 @@ from pathlib import Path
 import neurokit2 as nk
 import heartpy as hp
 from pandas.core.frame import DataFrame
+pd.options.mode.use_inf_as_na = True
 
 BAD_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted."
 DIRECTORY_NOT_EXISTING_MESSAGE = "Invalide input: ({value})! Directory doesn't exist."
