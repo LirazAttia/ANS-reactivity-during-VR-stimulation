@@ -6,7 +6,7 @@ from pathlib import Path
 
 from pandas.core.frame import DataFrame
 
-#Defenitions
+# Defenitions
 n_samples_for_averging : int = 100
 wights: tuple = (0.333, 0.333, 0.333)
 data_path = Path(r"C:\Users\Anthony\Desktop\extra\Data.csv")
@@ -14,65 +14,69 @@ data_path = Path(r"C:\Users\Anthony\Desktop\extra\Data.csv")
 
 #####################################################################################
 
-
-def read_data(data_path: Path) -> DataFrame:
-    """ Pulling and reading the data into Dataframe.
-    parm:
-    return:
+class OfflineAnalysisANS:
     """
-    data_path = Path(data_path)
-    raw_data = pd.read_csv(data_path)
-    return raw_data
-
-
-def process_samples(raw_data: DataFrame, n_samples: int = 10) -> DataFrame:
-    """ averaging serval sampels in each column.
-    param:
-    returns:
-    """
-    time = raw_data["TIME"]
-    ecg = raw_data["ECG"]
-    breaths = raw_data["RESP"]
-    gsr = raw_data["GSR"]
-
-    processed_data = pd.DataFrame(columns=["time", "heart_rate", "breathing_rate", "gsr"])
+    Base class for offline ANS measures' analysis objects.
     
-    processed_data["time"] = time.iloc[0:-1:n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
-    processed_data["heart_rate"] = heart_rate(ecg, n_samples)
-    processed_data["breathing_rate"] = breathing_rate(breaths, n_samples)
-    processed_data["gsr"] = gsr.groupby(np.arange(len(gsr))//n_samples).mean()
-    
-    return processed_data
-
-def heart_rate(ecg, n_samples):
-    #Extracts heart rate from raw ECG data
-    pass
-
-def breathing_rate(breaths, n_samples):
-    #Extracts breathing rate from raw respiration data
-    pass
-
-def normalizing_values(avg_data: DataFrame, columns_list = ["ECG", "GSR", "RESP"]) -> DataFrame:
-    """ normalazing each column.
-    parm:
-    return:
+    This class provides an "interface" for subclasses to implement which
+    conforms with the larger data processing pipeline of this project.
     """
-    for column in columns_list:
-        min = avg_data[column].min()
-        max = avg_data[column].max()
-        avg_data[column] = (avg_data[column] - min)/max
-    normal_data = avg_data.copy()
-    return normal_data
+
+    def read_data(self, data_path: Path) -> DataFrame:
+        """ Pulling and reading the data into Dataframe.
+        parm:
+        return:
+        """
+        self.path = Path(data_path)
+        self.raw_data = pd.read_csv(self.path)
+
+    def heart_rate(ecg, n_samples):
+        #Extracts heart rate from raw ECG data
+        pass
+
+    def resp_rate(breaths, n_samples):
+        # Extracts breathing rate from raw respiration data
+        pass
+
+    def process_samples(self, n_samples: int = 10) -> DataFrame:
+        """ averaging serval sampels in each column.
+        param:
+        returns:
+        """
+        self.time = self.raw_data["TIME"]
+        self.ecg = self.raw_data["ECG"]
+        self.resp = self.raw_data["RESP"]
+        self.gsr = self.raw_data["GSR"]
+
+        self.processed_data = pd.DataFrame(
+            columns=["time", "heart_rate", "resp_rate", "gsr"])
+        
+        self.processed_data["time"] = self.time.iloc[0:-1:n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
+        self.processed_data["heart_rate"] = heart_rate(self.ecg, n_samples)
+        self.processed_data["resp_rate"] = resp_rate(self.resp, n_samples)
+        self.processed_data["gsr"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
+
+    def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
+        """ normalazing each column.
+        parm:
+        return:
+        """
+        for column in columns_list:
+            min = self.processed_data[column].min()
+            max = self.processed_data[column].max()
+            self.processed_data[column] = (self.processed_data[column]-min)/max
+        self.normal_data = self.processed_data.copy()
 
 
-def index_adding(normal_data: DataFrame, wights: tuple = (0.333, 0.333, 0.333)) -> DataFrame:
-    """ making an index according to wights.
-    parm:
-    return:
-    """
-    normal_data["Fear_Index"] = normal_data["ECG"]*wights[0] + normal_data["GSR"]*wights[1] +normal_data["RESP"]*wights[2]
-    processed_data = normal_data.copy()
-    return processed_data
+    def score_adding(self, wights: tuple = (0.333, 0.333, 0.333)) -> DataFrame:
+        """ making an index according to wights.
+        parm:
+        return:
+        """
+        self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] 
+                                        + self.normal_data["GSR"]*wights[1] 
+                                        + self.normal_data["RESP"]*wights[2]
+        self.scored_data = self.normal_data.copy()
 
 
 
