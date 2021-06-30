@@ -21,17 +21,36 @@ def read_data(data_path: Path) -> DataFrame:
     return:
     """
     data_path = Path(data_path)
-    row_data = pd.read_csv(data_path)
-    return row_data
+    raw_data = pd.read_csv(data_path)
+    return raw_data
 
 
-def averaging_samples(row_data: DataFrame, n_samples_for_averging: int = 10) -> DataFrame:
+def process_samples(raw_data: DataFrame, n_samples: int = 10) -> DataFrame:
     """ averaging serval sampels in each column.
-    parm:
-    return:
+    param:
+    returns:
     """
-    avg_data = row_data.groupby(np.arange(len(row_data))//n_samples_for_averging).mean() #####
-    return avg_data
+    time = raw_data["TIME"]
+    ecg = raw_data["ECG"]
+    breaths = raw_data["RESP"]
+    gsr = raw_data["GSR"]
+
+    processed_data = pd.DataFrame(columns=["time", "heart_rate", "breathing_rate", "gsr"])
+    
+    processed_data["time"] = time.iloc[0:-1:n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
+    processed_data["heart_rate"] = heart_rate(ecg, n_samples)
+    processed_data["breathing_rate"] = breathing_rate(breaths, n_samples)
+    processed_data["gsr"] = gsr.groupby(np.arange(len(gsr))//n_samples).mean()
+    
+    return processed_data
+
+def heart_rate(ecg, n_samples):
+    #Extracts heart rate from raw ECG data
+    pass
+
+def breathing_rate(breaths, n_samples):
+    #Extracts breathing rate from raw respiration data
+    pass
 
 def normalizing_values(avg_data: DataFrame, columns_list = ["ECG", "GSR", "RESP"]) -> DataFrame:
     """ normalazing each column.
