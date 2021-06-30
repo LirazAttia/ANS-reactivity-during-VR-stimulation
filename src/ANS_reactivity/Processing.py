@@ -59,14 +59,13 @@ class OfflineAnalysisANS:
                 else:
                     heart_rate_for_every_chunk[data_chunks] = heart_rate_for_every_chunk[data_chunks-1]
      
-        return heart_rate_for_every_chunk
+        self.hr = heart_rate_for_every_chunk
 
 
     def resp_rate(self):
         # Extracts breathing rate from raw respiration data
         rsp_cleaned = nk.rsp_clean(self.resp)
-        rsp_rate = nk.rsp_rate(rsp_cleaned, sampling_rate = self.sample_rate, window = self.time_window)
-        return rsp_rate
+        self.rsp = nk.rsp_rate(rsp_cleaned, sampling_rate = self.sample_rate, window = self.time_window)
 
     def process_samples(self) -> DataFrame:
         """ averaging serval sampels in each column.
@@ -82,8 +81,8 @@ class OfflineAnalysisANS:
             columns=["TIME", "ECG", "RESP", "GSR"])
        
         self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
-        self.processed_data["ECG"] = heart_rate()
-        self.processed_data["RESP"] = resp_rate()
+        self.processed_data["ECG"] = self.hr
+        self.processed_data["RESP"] = self.rsp
         self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
