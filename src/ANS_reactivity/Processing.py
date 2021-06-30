@@ -55,8 +55,9 @@ class OfflineAnalysisANS:
     def resp_rate(self):
         # Extracts breathing rate from raw respiration data
         rsp_cleaned = nk.rsp_clean(self.resp)
-        rsp_rate = nk.rsp_rate(rsp_cleaned, sampling_rate = self.sample_rate, window = self.time_window)
-        return rsp_rate
+        rsp_rate = pd.Dataframe(nk.rsp_rate(rsp_cleaned, sampling_rate = self.sample_rate, window = self.time_window))
+        rsp_rate_avg = rsp_rate.groupby(np.arange(len(rsp_rate))//self.n_samples).mean()
+        return rsp_rate_avg
 
     def process_samples(self) -> DataFrame:
         """ averaging serval sampels in each column.
