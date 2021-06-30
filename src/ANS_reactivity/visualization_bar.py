@@ -53,10 +53,11 @@ width = 0.35
 
 
 if __name__ == "__main__":
-    row_data = read_data(data_path)
-    avg_data = averaging_samples(row_data, n_samples_for_averging = 100)
-    normal_data = normalizing_values(avg_data)
-    processed_data = index_adding(normal_data, wights)
+    data = OfflineAnalysisANS(data_path = r"C:\Users\Anthony\Desktop\Hackathon\ANS-reactivity-during-VR-stimulation\Data.csv")
+    data.read_data()
+    data.normalizing_values()
+    data.score_adding()
+    data.scored_data()
 
 
     plt.ion()
@@ -67,7 +68,7 @@ if __name__ == "__main__":
 
     
     for i in range(1000):
-        real_time_data = processed_data.iloc[i, :]
+        real_time_data = data.scored_data().iloc[i, :]
         print(real_time_data)
         plt.cla()
         fear_values = [real_time_data["ECG"], real_time_data["GSR"], real_time_data["RESP"], real_time_data["Fear_Index"]]
