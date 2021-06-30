@@ -73,8 +73,6 @@ class OfflineAnalysisANS:
         returns:
         """
         self.time = self.raw_data["TIME"]
-        self.ecg = self.raw_data["ECG"]
-        self.resp = self.raw_data["RESP"]
         self.gsr = self.raw_data["GSR"]
 
         self.processed_data = pd.DataFrame(
