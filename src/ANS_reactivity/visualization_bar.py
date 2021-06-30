@@ -10,6 +10,7 @@ from matplotlib import rc
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+from pandas.core.frame import DataFrame
 
 
 def data_gen():
@@ -55,9 +56,11 @@ width = 0.35
 if __name__ == "__main__":
     data = OfflineAnalysisANS(data_path = r"C:\Users\Anthony\Desktop\Hackathon\ANS-reactivity-during-VR-stimulation\Data.csv")
     data.read_data()
+    data.process_samples()
     data.normalizing_values()
     data.score_adding()
-    data.scored_data()
+    #data.scored_data()
+    print(data.processed_data["GSR"])
 
 
     plt.ion()
@@ -66,9 +69,9 @@ if __name__ == "__main__":
     plot_me()
     ax.bar_label(rects1)
 
-    
+    input("wait...")
     for i in range(1000):
-        real_time_data = data.scored_data().iloc[i, :]
+        real_time_data = data.scored_data.iloc[i, :]
         print(real_time_data)
         plt.cla()
         fear_values = [real_time_data["ECG"], real_time_data["GSR"], real_time_data["RESP"], real_time_data["Fear_Index"]]
