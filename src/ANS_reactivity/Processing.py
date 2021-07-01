@@ -6,6 +6,7 @@ from pathlib import Path
 import neurokit2 as nk
 import heartpy as hp
 from pandas.core.frame import DataFrame
+import matplotlib.pyplot as plt
 pd.options.mode.use_inf_as_na = True
 
 BAD_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted as data_path."
@@ -141,4 +142,10 @@ class OfflineAnalysisANS:
             self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] + self.normal_data["GSR"]*wights[1] + self.normal_data["RESP"]*wights[2]
             self.scored_data = self.normal_data.copy()
 
-    #def_plot_stress_score()
+    def plot_score():
+        """ """
+        self.scored_data["Fear_Index"].plot()
+        plt.title("Score")
+        plt.xlabel("Samples")
+        plt.ylabel("Fear_Score")   
+        plt.show()
