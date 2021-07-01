@@ -72,6 +72,8 @@ class OfflineAnalysisANS:
         return:
         """
         self.raw_data = pd.read_csv(self.data_path)
+        self.raw_data.columns = ["TIME", "ECG", "GSR", "RESP"]
+
 
     def change_weights(self, weights: dict = {'ECG': 1/3, 'GSR': 1/3, 'RESP': 1/3}):
         if not isinstance(weights, dict):
