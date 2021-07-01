@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from Processing import * # I think its have to be in the same folder for this script recognize Processing
+from src.ANS_reactivity.Processing import * # I think its have to be in the same folder for this script recognize Processing
 
 def test_wrong_input_type_path():
     fname = 2
@@ -34,12 +34,12 @@ def test_data_attr_is_df():
     q.read_data()
     assert isinstance(q.raw_data, pd.DataFrame)
 
-def test_processed_ECG_length(): ## ValueError: Length of values (86) does not match length of index (87)
+def test_processed_ECG_length():
     fname = 'Data.csv'
     q = OfflineAnalysisANS(fname)
     q.read_data()
     q.process_samples()
-    assert len(q.processed_data["ECG"]) == len(q.raw_data)/q.n_samples
+    assert len(q.processed_data["ECG"]) == math.ceil(len(q.raw_data)/q.n_samples)
 
 def test_processed_RESP_length(): ## ValueError: Length of values (86) does not match length of index (87)
     fname = 'Data.csv'
@@ -149,4 +149,5 @@ def test_score_adding_without_nans(): ## ValueError: Length of values (86) does 
     q.read_data()
     q.process_samples()
     q.normalizing_values()
-    assert self.scored_data[self.scored_data["Fear_Index"] == np.nan].size() == 0 #Need duble check
+    q.score_adding()
+    assert q.scored_data[q.scored_data["Stress_Score"] == np.nan].size() == 0 #Need duble check
