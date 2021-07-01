@@ -74,7 +74,6 @@ def merge_all_data(raw_data: DataFrame, processes_wav_data: pd.Series):
     """
     all_data = raw_data.copy()
     all_data["WAV"] = processes_wav_data
-    print(all_data)
     return all_data
 
 def correlation_creator(column1: pd.Series, column2: pd.Series):
