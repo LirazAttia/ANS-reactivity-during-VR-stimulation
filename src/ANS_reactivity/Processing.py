@@ -6,6 +6,7 @@ from pathlib import Path
 import neurokit2 as nk
 import heartpy as hp
 from pandas.core.frame import DataFrame
+import matplotlib.pyplot as plt
 pd.options.mode.use_inf_as_na = True
 
 BAD_PATH_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted as data_path."
@@ -139,10 +140,15 @@ class OfflineAnalysisANS:
         for column in columns_list:
             min = self.processed_data[column].min()
             max = self.processed_data[column].max()
-            self.processed_data[column] = (self.processed_data[column]-min)/max
-        self.normal_data = self.processed_data.copy()
+            try:
+                self.processed_data[column] = (self.processed_data[column]-min)/max
+            except ValueError:
+                max = 1 #### ?
+                self.processed_data[column] = (self.processed_data[column]-min)/max
+            finally:
+                self.normal_data = self.processed_data.copy()
 
-    def score_adding(self) -> DataFrame:
+    def score_adding(self):
         """ making an index according to wights.
         parm:
         return:
@@ -150,4 +156,10 @@ class OfflineAnalysisANS:
         self.normal_data["Stress_Score"] = self.normal_data["ECG"]*self.weights["ECG"] + self.normal_data["GSR"]*self.weights["GSR"] + self.normal_data["RESP"]*self.weights["RESP"]
         self.scored_data = self.normal_data.copy()
 
-    # def plot_stress_score():
+        def plot_score():
+            """ """
+            self.scored_data["Fear_Index"].plot()
+            plt.title("Score")
+            plt.xlabel("Samples")
+            plt.ylabel("Fear_Score")   
+            plt.show()
