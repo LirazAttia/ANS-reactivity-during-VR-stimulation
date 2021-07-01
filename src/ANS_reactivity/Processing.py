@@ -147,6 +147,8 @@ class OfflineAnalysisANS:
         """ """
         self.scored_data["Fear_Index"].plot()
         plt.title("Score")
-        plt.xlabel("Samples")
-        plt.ylabel("Fear_Score")   
+        plt.xlabel("Sampleד")
+        plt.ylabel("Fear Score")   
         plt.show()
+
+ד
