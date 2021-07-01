@@ -12,9 +12,9 @@ class OnlineAnalysisANS(OfflineAnalysisANS):
         """
         current_sample_data = current_sample_data.append(new_data, ignore_index=True)
 
-    def translate_online_data_to_csv(online_data):
+    def combine_all_raw_data(online_data):
         """
-        This function combines all data in current time window to one csv, so that all ohter functions can work well.
+        This function combines all data in current time window to one dataframe.
         """
         # convert online_data as .cnt data to 4 integers, one for each data-type(TIME, ECG, GSR, RESP)
 
@@ -23,5 +23,5 @@ class OnlineAnalysisANS(OfflineAnalysisANS):
         while True:
             append_online_data_to_dataframe(online_data, current_sample_data)
         
-        self.current_sample_data.to_csv('current_time_window_data.csv')
-        return self.current_sample_data
+        self.raw_data = current_sample_data
+        return self.raw_data
