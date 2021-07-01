@@ -55,7 +55,7 @@ class OfflineAnalysisANS:
     def resp_rate(self):
         # Extracts breathing rate from raw respiration data
         rsp_cleaned = nk.rsp_clean(self.resp)
-        rsp_rate = pd.Dataframe(nk.rsp_rate(rsp_cleaned, sampling_rate = self.sample_rate, window = self.time_window))
+        rsp_rate = pd.DataFrame(nk.rsp_rate(rsp_cleaned, sampling_rate = self.sample_rate, window = self.time_window))
         rsp_rate_avg = rsp_rate.groupby(np.arange(len(rsp_rate))//self.n_samples).mean()
         return rsp_rate_avg
 
@@ -75,8 +75,8 @@ class OfflineAnalysisANS:
         n_samples = self.time_window*self.sample_rate
         
         self.processed_data["time"] = self.time.iloc[0:-1:n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
-        self.processed_data["heart_rate"] = heart_rate()
-        self.processed_data["resp_rate"] = resp_rate()
+        self.processed_data["heart_rate"] = self.heart_rate()
+        self.processed_data["resp_rate"] = self.resp_rate()
         self.processed_data["gsr"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
