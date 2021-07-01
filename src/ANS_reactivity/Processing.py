@@ -137,7 +137,7 @@ class OfflineAnalysisANS:
             columns=["TIME", "ECG", "RESP", "GSR"])
 
         self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
-        #self.processed_data["ECG"] = self.heart_rate()
+        self.processed_data["ECG"] = self.heart_rate()
         self.processed_data["RESP"] = self.resp_rate()
         self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//self.n_samples).mean()
 
