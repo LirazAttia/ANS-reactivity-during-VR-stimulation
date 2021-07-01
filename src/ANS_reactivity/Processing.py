@@ -183,5 +183,5 @@ class OfflineAnalysisANS:
             self.scored_data["Stress_Score"].plot()
             plt.title("Score")
             plt.xlabel("Samples")
-            plt.ylabel("Fear_Score")   
+            plt.ylabel("Stress_Score")   
             plt.show()
