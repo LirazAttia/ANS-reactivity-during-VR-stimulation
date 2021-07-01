@@ -10,6 +10,9 @@ class OnlineAnalysisANS(OfflineAnalysisANS):
     def __init__(self, data_path: str = r"C:\Users\Anthony\Desktop\Hackathon\ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: dict = {'ECG': 1/3, 'GSR': 1/3, 'RESP': 1/3}):
         """ """
         OfflineAnalysisANS.__init__(self, data_path, sample_rate, time_window,  weights)
+        self.bar_colors = ["r", "k", "g", "b"]
+        self.x_positions = [0., 0.5, 1.0, 1.5]
+        self.width = 0.15
 
     def compute_data_for_simulation(self):
         """ """
@@ -19,35 +22,26 @@ class OnlineAnalysisANS(OfflineAnalysisANS):
         self.score_adding()
 
         
-    def plot_me(self, labels = ["ECG", "GSR", "RESP", "Stress_Score"],
-        bar_colors = ["r", "k", "g", "b"],
-        fear_values = [0.5, 0.5, 0.5, 0.5],
-        x_positions = [0., 0.5, 1.0, 1.5],
-        width = 0.15):
+    def plot_me(self, labels = ["ECG", "GSR", "RESP", "Stress_Score"], fear_values = [0.5, 0.5, 0.5, 0.5]):
         """ """
         plt.ion()
         fig, ax = plt.subplots()
-        rects1 = ax.bar(x_positions, fear_values, width, label='Stress_Score', color = bar_colors)
+        rects1 = ax.bar(self.x_positions, fear_values, self.width, label='Stress_Score', color = self.bar_colors)
         self.plot_me()
         ax.bar_label(rects1)
         while True:
             ax.set_ylabel('Stress_Score')
             ax.set_title('Real time Data')
-            ax.set_xticks(x_positions)
+            ax.set_xticks(self.x_positions)
             ax.set_xticklabels(labels)
             ax.set_ylim([0, 1.2])
             yield fig, ax
 
-    def update_data_simulation(self, 
-        ax, 
-        i,
-        bar_colors = ["r", "k", "g", "b"],
-        x_positions = [0., 0.5, 1.0, 1.5],
-        width = 0.15):
+    def update_data_simulation(self, ax, i):
         """ """
         real_time_data = self.scored_data.iloc[i, :]
         fear_values = [real_time_data["ECG"], real_time_data["GSR"], real_time_data["RESP"], real_time_data["Stress_Score"]]
-        rects1 = ax.bar(x_positions, fear_values, width, label='Stress_Score', color = bar_colors)
+        rects1 = ax.bar(self.x_positions, fear_values, self.width, label='Stress_Score', color = self.bar_colors)
         return rects1
 
     def bar_simulation(self, loop_time: float = 0.1):
