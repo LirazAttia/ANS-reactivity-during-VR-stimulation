@@ -104,23 +104,12 @@ class OfflineAnalysisANS:
         self.gsr = self.raw_data["GSR"]
 
         self.processed_data = pd.DataFrame(
-<<<<<<< HEAD
-            columns=["time", "heart_rate", "resp_rate", "gsr"])
-
-        n_samples = self.time_window*self.sample_rate
-        
-        self.processed_data["time"] = self.time.iloc[0:-1:n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
-        self.processed_data["heart_rate"] = self.heart_rate()
-        self.processed_data["resp_rate"] = self.resp_rate()
-        self.processed_data["gsr"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
-=======
             columns=["TIME", "ECG", "RESP", "GSR"])
        
         self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
         self.processed_data["ECG"] = self.heart_rate()
         self.processed_data["RESP"] = self.resp_rate()
         self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//self.n_samples).mean()
->>>>>>> d2abbf6ef0eefd14ce604a3f444866a1063551ec
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
         """ normalazing each column.
