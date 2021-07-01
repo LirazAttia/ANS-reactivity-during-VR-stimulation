@@ -7,7 +7,7 @@ import time
 
 class OnlineAnalysisANS(OfflineAnalysisANS):
     """ """
-    def __init__(self, data_path: str = r"Data.csv"", sample_rate: int = 512, time_window: int = 10, weights: dict = {'ECG': 1/3, 'GSR': 1/3, 'RESP': 1/3}):
+    def __init__(self, data_path: str = r"Data.csv" , sample_rate: int = 512, time_window: int = 10, weights: dict = {'ECG': 1/3, 'GSR': 1/3, 'RESP': 1/3}):
         """ """
         OfflineAnalysisANS.__init__(self, data_path, sample_rate, time_window,  weights)
         #Bar data
