@@ -90,23 +90,37 @@ class OfflineAnalysisANS:
             self.weights = weights
 
     def heart_rate(self):
-        # Extracts heart rate from raw ECG data
+        '''
+        This function extracts the heart rate from ECG data.
+        It has no input because it uses the data of the class. 
+        Its output is a numpy array of beats per minute (bpm) for each time_window.
+
+        Noisy ECG data that cannot produce a bpm output is ignored,
+        and the previous time-window's bpm is refered to instead (unless the noise
+        is in the first time window. In that case, the output of the bpm is NaN)
+        '''
 
         number_of_chunks = (len(self.ecg))//self.n_samples
         heart_rate_for_every_chunk = np.zeros(number_of_chunks)
         for data_chunks in range(number_of_chunks):
             try:
-                data_chunk = list(range(data_chunks*number_of_chunks , data_chunks*number_of_chunks+self.n_samples))
-                _, measures = hp.process(self.raw_data[data_chunk, 'ECG'])
+                data_chunk = np.arange(data_chunks*self.n_samples, (data_chunks+1)*self.n_samples)
+                relevant_data = self.ecg[data_chunk]
+                relevant_data = relevant_data.reset_index(drop = True)
+
+                working_data, measures = hp.process(relevant_data, self.sample_rate)
                 bpm_measured = measures['bpm']
-                heart_rate_for_every_chunk[data_chunks] = bpm_measured
+                if bpm_measured < 220:
+                    heart_rate_for_every_chunk[data_chunks] = bpm_measured
+                else:
+                    raise Exception("")
             except:
                 if data_chunks == 0:
                     heart_rate_for_every_chunk[data_chunks] = np.NaN
                 else:
                     heart_rate_for_every_chunk[data_chunks] = heart_rate_for_every_chunk[data_chunks-1]
 
-        return heart_rate_for_every_chunk
+        return (heart_rate_for_every_chunk)
 
     def resp_rate(self) -> pd.DataFrame:
         """
