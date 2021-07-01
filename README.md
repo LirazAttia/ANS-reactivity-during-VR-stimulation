@@ -11,7 +11,7 @@ In addition, this package allows to process speech data, and show correlational 
 
 
 # Contents
-This resipetory includes few files that you need to have/run before you start analysing:
+This resipetory includes few files that you'll need to have before you start analysing:
 1. **Processing.py** - This file is the main file which defines the parent class "OfflineAnalysisANS", and all it's methods for the raw-data processing, stress-score makeing, and visualizing.
 2. **visualization_bar.py** - This file containes child classes and methods allowing to process and visualize the stress-score online, during an experiment.
 3. **test_offline.py** - In here you can find few tests for all the methods.
