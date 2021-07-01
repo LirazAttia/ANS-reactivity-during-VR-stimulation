@@ -102,11 +102,16 @@ class OfflineAnalysisANS:
         is in the first time window. In that case, the output of the bpm is NaN)
         '''
 
-        number_of_chunks = (len(self.ecg))//self.n_samples
+        number_of_chunks = round((len(self.ecg))/self.n_samples)
         heart_rate_for_every_chunk = np.zeros(number_of_chunks)
         for data_chunks in range(number_of_chunks):
             try:
-                data_chunk = np.arange(data_chunks*self.n_samples, (data_chunks+1)*self.n_samples)
+                start_of_chunk = data_chunks*self.n_samples
+                if data_chunks != number_of_chunks:
+                    end_of_chunk = (data_chunks+1)*self.n_samples
+                else:
+                    end_of_chunk = len(self.ecg)
+                data_chunk = np.arange(start_of_chunk, end_of_chunk)
                 relevant_data = self.ecg[data_chunk]
                 relevant_data = relevant_data.reset_index(drop = True)
 
