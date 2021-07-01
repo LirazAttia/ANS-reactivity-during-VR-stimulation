@@ -1,5 +1,3 @@
-
-### Missing: dealing with nans and inf, valueerrors, typeerrors
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -189,7 +187,7 @@ class OfflineAnalysisANS:
             try:
                 self.processed_data[column] = (self.processed_data[column]-min)/max
             except ZeroDivisionError:
-                self.processed_data[column] = (self.processed_data[column]+1 -min)/max
+                self.processed_data[column] = (self.processed_data[column]+1 -min+1)/max+1
             finally:
                 self.normal_data = self.processed_data.copy()
 
