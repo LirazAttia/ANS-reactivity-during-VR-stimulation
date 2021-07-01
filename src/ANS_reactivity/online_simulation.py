@@ -7,7 +7,13 @@ import pathlib as Path
 import time
 
 class OnlineAnalysisANS(OfflineAnalysisANS):
-    """ """
+    """
+        Child class for simulating online biofeedback system.
+    
+    This class simulates real-time reading of a csv file and enables creation of a bar chart that simulates a graphic
+    change as a result of a change in stress measurement like biofeedback system and a line graph 
+    that describes in real time the changing of the stress score that the program is calculating.
+    """
     def __init__(self, data_path: Path = r"Data.csv" , sample_rate: int = 512, time_window: int = 10, weights: dict = {'ECG': 1/3, 'GSR': 1/3, 'RESP': 1/3}):
         """init method receives initial values and creates values to create the graphs 
             Input:  
