@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 pd.options.mode.use_inf_as_na = True
 import math
 
+"""
+Input error messages
+"""
 BAD_PATH_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted as data_path."
 DIRECTORY_NOT_EXISTING_MESSAGE = "Invalide input: ({value})! Directory doesn't exist."
 WEIGHTS_LENGTH_MESSAGE = "Invalid input: ({value}). Lenght of dict must be 3."
@@ -30,6 +33,11 @@ class OfflineAnalysisANS:
     conforms with the larger data processing pipeline of this project.
     """
 
+    """
+    ---1---
+    Initialize and read our data
+
+    """
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: dict = {'ECG': 1/3, 'GSR': 1/3, 'RESP': 1/3}):
 
         if not (isinstance(data_path, Path) or isinstance(data_path, str)):
@@ -54,6 +62,7 @@ class OfflineAnalysisANS:
         self.check_weights_input()
 
         self.n_samples = self.time_window*self.sample_rate
+    
 
     def read_data(self) -> DataFrame:
         """ Pulling and reading the data into Dataframe.
@@ -62,33 +71,12 @@ class OfflineAnalysisANS:
         """
         self.raw_data = pd.read_csv(self.data_path)
         self.raw_data.columns = ["TIME", "ECG", "GSR", "RESP"]
+    
+    """
+    ---2---
+    Process the data before we can use it to generate our score
 
-    def check_weights_input(self):
-        weights = self.weights
-        if not isinstance(weights, dict):
-            raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
-        elif len(weights) != 3:
-            raise ValueError(WEIGHTS_LENGTH_MESSAGE. format(value=weights))
-        elif list(weights.keys()) != ["ECG", "GSR", "RESP"]:
-            raise ValueError(BAD_KEYS_NAMES_MESSAGE.format(value=list(weights.keys())))
-        elif not (isinstance(weights["ECG"], (int, float)) and isinstance(weights["GSR"], (int, float)) and isinstance(weights["RESP"], (int, float))):
-            raise TypeError(WEIGHTS_ARE_NOT_NUMBERS_MESSAGE.format(value=weights))
-        elif sum(weights.values()) != 1:
-            raise ValueError(WEIGHTS_SUM_MESSAGE.format(value=sum(weights.values())))
-        elif not (weights["ECG"] >= 0 and weights["GSR"] >= 0 and weights["RESP"] >= 0):
-            raise ValueError(WEIGHTS_NEGATIVE_MESSAGE.format(value=weights))
-        else:
-            print(f"The weights are valid: {weights}")
-            return(True)
-
-    def change_weights(self, new_weights: dict):
-        old_weights = self.weights
-        self.weights = new_weights
-        if not self.check_weights_input():
-            self.weights = old_weights
-            print(f"New weights not valid. Weights remain: {self.weights}")
-        else:
-            self.weights = new_weights
+    """
 
     def heart_rate(self):
         '''
@@ -175,6 +163,38 @@ class OfflineAnalysisANS:
                 self.processed_data[column] = (self.processed_data[column]+1 -min)/max
             finally:
                 self.normal_data = self.processed_data.copy()
+
+    """
+    ---3---
+    Generate and visualize our stress score
+
+    """
+    def check_weights_input(self):
+        weights = self.weights
+        if not isinstance(weights, dict):
+            raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
+        elif len(weights) != 3:
+            raise ValueError(WEIGHTS_LENGTH_MESSAGE. format(value=weights))
+        elif list(weights.keys()) != ["ECG", "GSR", "RESP"]:
+            raise ValueError(BAD_KEYS_NAMES_MESSAGE.format(value=list(weights.keys())))
+        elif not (isinstance(weights["ECG"], (int, float)) and isinstance(weights["GSR"], (int, float)) and isinstance(weights["RESP"], (int, float))):
+            raise TypeError(WEIGHTS_ARE_NOT_NUMBERS_MESSAGE.format(value=weights))
+        elif sum(weights.values()) != 1:
+            raise ValueError(WEIGHTS_SUM_MESSAGE.format(value=sum(weights.values())))
+        elif not (weights["ECG"] >= 0 and weights["GSR"] >= 0 and weights["RESP"] >= 0):
+            raise ValueError(WEIGHTS_NEGATIVE_MESSAGE.format(value=weights))
+        else:
+            print(f"The weights are valid: {weights}")
+            return(True)
+
+    def change_weights(self, new_weights: dict):
+        old_weights = self.weights
+        self.weights = new_weights
+        if not self.check_weights_input():
+            self.weights = old_weights
+            print(f"New weights not valid. Weights remain: {self.weights}")
+        else:
+            self.weights = new_weights
 
     def score_adding(self):
         """ making an index according to wights.
