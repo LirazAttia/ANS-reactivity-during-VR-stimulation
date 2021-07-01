@@ -185,10 +185,13 @@ class OfflineAnalysisANS:
             min = self.processed_data[column].min()
             max = self.processed_data[column].max()
             try:
-                self.processed_data[column] = (self.processed_data[column]-self.processed_data[column].min())/self.processed_data[column].max()
+                self.processed_data[column] = self.processed_data[column]-self.processed_data[column].min()
+                self.processed_data[column] = self.processed_data[column]/self.processed_data[column].max()
             except ZeroDivisionError:
                 self.processed_data[column] = self.processed_data[column].add(1)
-                self.processed_data[column] = (self.processed_data[column] - self.processed_data[column].min())/self.processed_data[column].max()
+                self.processed_data[column] = self.processed_data[column]-self.processed_data[column].min()
+                self.processed_data[column] = self.processed_data[column]/self.processed_data[column].max()
+            finally:
                 self.normal_data = self.processed_data.copy()
 
     """

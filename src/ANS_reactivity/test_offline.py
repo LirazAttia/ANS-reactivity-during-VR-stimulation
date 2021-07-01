@@ -151,4 +151,3 @@ def test_normalizing_values_GSR_max():
     q.process_samples()
     q.normalizing_values()
     assert q.processed_data["GSR"].max() == 1
-
