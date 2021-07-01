@@ -25,7 +25,7 @@ def value_creator(y):
     return y
 
 def plot_me():
-    ax.set_ylabel('Fear_Level')
+    ax.set_ylabel('Stress_Score')
     ax.set_title('Real time Data')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
@@ -47,7 +47,7 @@ x_width = 20
 data_range = 1200
 start_sample = 20
 bar_colors = ["r", "k", "g", "b"]
-labels = ["ECG", "GSR", "RESP" , "Fear_Index"]
+labels = ["ECG", "GSR", "RESP" , "Stress_Score"]
 fear_values = [0.5, 0.5, 0.5, 0.5]
 x = np.arange(len(labels))
 width = 0.35
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     plt.ion()
     fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width/2, fear_values, width, label='Fear_Level', color = bar_colors)
+    rects1 = ax.bar(x - width/2, fear_values, width, label='Stress_Score', color = bar_colors)
     plot_me()
     ax.bar_label(rects1)
 
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         real_time_data = data.scored_data.iloc[i, :]
         print(real_time_data)
         plt.cla()
-        fear_values = [real_time_data["ECG"], real_time_data["GSR"], real_time_data["RESP"], real_time_data["Fear_Index"]]
-        rects1 = ax.bar(x - width/2, fear_values, width, label='Fear_Level', color = bar_colors)
+        fear_values = [real_time_data["ECG"], real_time_data["GSR"], real_time_data["RESP"], real_time_data["Stress_Score"]]
+        rects1 = ax.bar(x - width/2, fear_values, width, label='Stress_Score', color = bar_colors)
         plot_me()
         fig.canvas.draw()
         fig.canvas.flush_events()

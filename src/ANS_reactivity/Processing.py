@@ -165,9 +165,8 @@ class OfflineAnalysisANS:
             max = self.processed_data[column].max()
             try:
                 self.processed_data[column] = (self.processed_data[column]-min)/max
-            except ValueError:
-                max = 1 #### ?
-                self.processed_data[column] = (self.processed_data[column]-min)/max
+            except ZeroDivisionError:
+                self.processed_data[column] = (self.processed_data[column]+1 -min)/max
             finally:
                 self.normal_data = self.processed_data.copy()
 
@@ -181,8 +180,8 @@ class OfflineAnalysisANS:
 
         def plot_score():
             """ """
-            self.scored_data["Fear_Index"].plot()
+            self.scored_data["Stress_Score"].plot()
             plt.title("Score")
             plt.xlabel("Samples")
-            plt.ylabel("Fear_Score")   
+            plt.ylabel("Stress_Score")   
             plt.show()
