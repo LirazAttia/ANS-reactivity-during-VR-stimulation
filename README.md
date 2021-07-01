@@ -13,9 +13,9 @@ In addition, this package allows to process speech data, and shows correlational
 # Contents
 This repository includes few files that you'll need to have before you start analyzing:
 1. **Processing.py** - This file is the main file that defines the parent class "OfflineAnalysisANS", and all its methods for raw-data processing, stress-score making, and visualizing.
-2. **visualization_bar.py** - This file contains child classes and methods allowing to process and visualize the stress-score online, during an experiment.
-3. **test_offline.py** - In here you can find few tests for all the methods.
-4. **Data.csv** - An example of real raw data that serves as an input for the parent class. It contains 4 columns: TIME, ECG, GSR, and RESP.
+2. **online_simulation.py** - This file contains child classes and methods allowing to simulate processing and visualizing the stress-score online, during an experiment.
+4. **test_offline.py** - In here you can find few tests for all the methods.
+5. **Data.csv** - An example of real raw data that serves as an input for the parent class. It contains 4 columns: TIME, ECG, GSR, and RESP.
 
 # Usage
 Below is an example of the minimal usage flow required for receiving a result:
