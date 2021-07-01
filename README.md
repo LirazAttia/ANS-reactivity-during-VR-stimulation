@@ -21,10 +21,17 @@ This repository includes a few files that you'll need to have before you start a
 
 # Usage
 Below is an example of the minimal usage flow required for receiving a result:
+
 ![image](https://user-images.githubusercontent.com/80268425/124131773-cb879580-da88-11eb-9237-afbf24428b61.png)
+
 Offline processing and plotting of the data:
+
 ![Figure_1](https://user-images.githubusercontent.com/80268425/124130351-5798bd80-da87-11eb-9acb-3b74b36ad556.png)
+
 Online processing and plotting of the data:
-![Figure_2](src\ANS_reactivity\graph.JPG)
-![Figure_3](src\ANS_reactivity\plot.JPG)
+
+![graph](https://user-images.githubusercontent.com/80276694/124158008-1530aa00-daa2-11eb-8486-6788e3e21103.JPG)
+
+![plot](https://user-images.githubusercontent.com/80276694/124158036-1b268b00-daa2-11eb-9916-dd682a1496f7.JPG)
+
 
