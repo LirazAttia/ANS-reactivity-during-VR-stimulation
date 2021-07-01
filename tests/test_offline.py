@@ -3,18 +3,15 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from Processing import * # I think its have to be in the same folder for this script recognize Processing
+from src.ANS_reactivity.Processing import *
+
+
+# Tests for inputs:
 
 def test_wrong_input_type_path():
     fname = 2
     with pytest.raises(TypeError):
         q = OfflineAnalysisANS(fname)
-
-def test_wrong_input_type_weigths():
-    fname = 'Data.csv'
-    weights = 2
-    with pytest.raises(TypeError):
-        q = OfflineAnalysisANS(fname, weights=weights)
 
 def test_wrong_input_type_sample_rate():
     fname = 'Data.csv'
@@ -28,71 +25,14 @@ def test_wrong_input_type_time_window():
     with pytest.raises(TypeError):
         q = OfflineAnalysisANS(fname, time_window=time_window)
 
-def test_data_attr_is_df():
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    assert isinstance(q.raw_data, pd.DataFrame)
 
-def test_processed_ECG_length(): ## ValueError: Length of values (86) does not match length of index (87)
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    assert len(q.processed_data["ECG"]) == len(q.raw_data)/q.n_samples
+# Tests for check_weights_input method:
 
-def test_processed_RESP_length(): ## ValueError: Length of values (86) does not match length of index (87)
+def test_wrong_input_type_weigths():
     fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    assert len(q.processed_data["RESP"]) == len(q.raw_data)/q.n_samples
-
-def test_processed_GSR_length(): ## ValueError: Length of values (86) does not match length of index (87)
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    assert len(q.processed_data["GSR"]) == len(q.raw_data)/q.n_samples
-
-def test_processed_TIME_length(): ## ValueError: Length of values (86) does not match length of index (87)
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    assert len(q.processed_data["TIME"]) == len(q.raw_data)/q.n_samples
-
-def test_normalizing_values_ECG_min(): ## ValueError: Length of values (86) does not match length of index (87)
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    q.normalizing_values()
-    assert q.processed_data["ECG"].min() == 0
-
-def test_normalizing_values_GSR_min(): ## ValueError: Length of values (86) does not match length of index (87)
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    q.normalizing_values()
-    assert q.processed_data["GSR"].min() == 0
-
-def test_normalizing_values_RESP_max(): ## ValueError: Length of values (86) does not match length of index (87)
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    q.normalizing_values()
-    assert q.processed_data["RESP"].max() == 1
-
-def test_normalizing_values_GSR_max(): ## ValueError: Length of values (86) does not match length of index (87)
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    q.normalizing_values()
-    assert q.processed_data["GSR"].max() == 1
+    weights = 2
+    with pytest.raises(TypeError):
+        q = OfflineAnalysisANS(fname, weights=weights)
 
 def test_change_weights_recive_only_dict():
     fname = 'Data.csv'
@@ -143,10 +83,81 @@ def test_change_weights_keys():
         str_weights = {"ABC": 0.7, "GSR": 0.2, "RESP": 0.1}
         q.change_weights(weights=str_weights)
 
+
+# Tests for methods' outputs:
+
+def test_data_attr_is_df():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    assert isinstance(q.raw_data, pd.DataFrame)
+
+def test_processed_ECG_length():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    assert len(q.processed_data["ECG"]) == math.ceil(len(q.raw_data)/q.n_samples)
+
+def test_processed_RESP_length():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    assert len(q.processed_data["RESP"]) == math.ceil(len(q.raw_data)/q.n_samples)
+
+def test_processed_GSR_length():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    assert len(q.processed_data["GSR"]) == math.ceil(len(q.raw_data)/q.n_samples)
+
+def test_processed_TIME_length():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    assert len(q.processed_data["TIME"]) == math.ceil(len(q.raw_data)/q.n_samples)
+
+def test_normalizing_values_ECG_min():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    q.normalizing_values()
+    assert q.processed_data["ECG"].min() == 0
+
+def test_normalizing_values_GSR_min():
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    q.normalizing_values()
+    assert q.processed_data["GSR"].min() == 0
+
+def test_normalizing_values_RESP_max(): ## AssertionError
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    q.normalizing_values()
+    assert q.processed_data["RESP"].max() == 1
+
+def test_normalizing_values_GSR_max(): ## AssertionError
+    fname = 'Data.csv'
+    q = OfflineAnalysisANS(fname)
+    q.read_data()
+    q.process_samples()
+    q.normalizing_values()
+    assert q.processed_data["GSR"].max() == 1
+
+
 def test_score_adding_without_nans(): ## ValueError: Length of values (86) does not match length of index (87)
     fname = 'Data.csv'
     q = OfflineAnalysisANS(fname)
     q.read_data()
     q.process_samples()
     q.normalizing_values()
-    assert self.scored_data[self.scored_data["Fear_Index"] == np.nan].size() == 0 #Need duble check
+    q.score_adding()
+    assert q.scored_data[q.scored_data["Stress_Score"] == np.nan].size() == 0 #Need duble check
