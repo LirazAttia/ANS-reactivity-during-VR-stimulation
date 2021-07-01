@@ -8,6 +8,7 @@ import heartpy as hp
 from pandas.core.frame import DataFrame
 import matplotlib.pyplot as plt
 pd.options.mode.use_inf_as_na = True
+import math
 
 BAD_PATH_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted as data_path."
 DIRECTORY_NOT_EXISTING_MESSAGE = "Invalide input: ({value})! Directory doesn't exist."
@@ -102,7 +103,7 @@ class OfflineAnalysisANS:
         is in the first time window. In that case, the output of the bpm is NaN)
         '''
 
-        number_of_chunks = round((len(self.ecg))/self.n_samples)
+        number_of_chunks = math.ceil((len(self.ecg))/self.n_samples)
         heart_rate_for_every_chunk = np.zeros(number_of_chunks)
         for data_chunks in range(number_of_chunks):
             try:
@@ -157,10 +158,10 @@ class OfflineAnalysisANS:
         self.processed_data = pd.DataFrame(
             columns=["TIME", "ECG", "RESP", "GSR"])
 
-        self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
+        self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples].reset_index(drop=True) #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
         self.processed_data["ECG"] = self.heart_rate()
-        self.processed_data["RESP"] = self.resp_rate()
-        self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//self.n_samples).mean()
+        self.processed_data["RESP"] = self.resp_rate().reset_index(drop=True)
+        self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//self.n_samples).mean().reset_index(drop=True)
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
         """ normalazing each column.
@@ -185,10 +186,11 @@ class OfflineAnalysisANS:
         self.normal_data["Stress_Score"] = self.normal_data["ECG"]*self.weights["ECG"] + self.normal_data["GSR"]*self.weights["GSR"] + self.normal_data["RESP"]*self.weights["RESP"]
         self.scored_data = self.normal_data.copy()
 
-        def plot_score():
-            """ """
-            self.scored_data["Stress_Score"].plot()
-            plt.title("Score")
-            plt.xlabel("Samples")
-            plt.ylabel("Stress_Score")   
-            plt.show()
+    def plot_score(self):
+        """ 
+        """
+        self.scored_data["Stress_Score"].plot()
+        plt.title("Score")
+        plt.xlabel("Samples")
+        plt.ylabel("Stress Score")   
+        plt.show()
