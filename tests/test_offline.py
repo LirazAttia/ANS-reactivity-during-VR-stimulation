@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.ANS_reactivity.Processing import *
+from src.ANS_reactivity.offline_processing import *
 
 
 # Tests for inputs:
