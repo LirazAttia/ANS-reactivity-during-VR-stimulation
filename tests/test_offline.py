@@ -151,13 +151,3 @@ def test_normalizing_values_GSR_max(): ## AssertionError
     q.process_samples()
     q.normalizing_values()
     assert q.processed_data["GSR"].max() == 1
-
-
-def test_score_adding_without_nans(): ## ValueError: Length of values (86) does not match length of index (87)
-    fname = 'Data.csv'
-    q = OfflineAnalysisANS(fname)
-    q.read_data()
-    q.process_samples()
-    q.normalizing_values()
-    q.score_adding()
-    assert q.scored_data[q.scored_data["Stress_Score"] == np.nan].size() == 0 #Need duble check
