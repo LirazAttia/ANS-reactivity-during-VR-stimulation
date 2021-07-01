@@ -1,9 +1,9 @@
-
+from offline_processing import *
 import numpy as np
 import pandas as pd
 import pytest
 
-from src.ANS_reactivity.offline_processing import *
+
 
 
 # Tests for inputs:
@@ -136,7 +136,7 @@ def test_normalizing_values_GSR_min():
     q.normalizing_values()
     assert q.processed_data["GSR"].min() == 0
 
-def test_normalizing_values_RESP_max(): ## AssertionError
+def test_normalizing_values_RESP_max(): 
     fname = 'Data.csv'
     q = OfflineAnalysisANS(fname)
     q.read_data()
@@ -144,10 +144,11 @@ def test_normalizing_values_RESP_max(): ## AssertionError
     q.normalizing_values()
     assert q.processed_data["RESP"].max() == 1
 
-def test_normalizing_values_GSR_max(): ## AssertionError
+def test_normalizing_values_GSR_max(): 
     fname = 'Data.csv'
     q = OfflineAnalysisANS(fname)
     q.read_data()
     q.process_samples()
     q.normalizing_values()
     assert q.processed_data["GSR"].max() == 1
+
