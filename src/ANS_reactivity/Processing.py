@@ -49,21 +49,9 @@ class OfflineAnalysisANS:
             raise TypeError(BAD_TIME_WINDOW_TYPE_MESSAGE.format(value=sample_rate))
         else:
             self.time_window = time_window
-
-        if not isinstance(weights, dict):
-            raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
-        elif len(weights) != 3:
-            raise ValueError(WEIGHTS_LENGTH_MESSAGE. format(value=weights))
-        elif list(weights.keys()) != ["ECG", "GSR", "RESP"]:
-            raise ValueError(BAD_KEYS_NAMES_MESSAGE.format(value=list(weights.keys())))
-        elif not (isinstance(weights["ECG"], (int, float)) and isinstance(weights["GSR"], (int, float)) and isinstance(weights["RESP"], (int, float))):
-            raise TypeError(WEIGHTS_ARE_NOT_NUMBERS_MESSAGE.format(value=weights))
-        elif sum(weights.values()) != 1:
-            raise ValueError(WEIGHTS_SUM_MESSAGE.format(value=sum(weights.values())))
-        elif not (weights["ECG"] >= 0 and weights["GSR"] >= 0 and weights["RESP"] >= 0):
-            raise ValueError(WEIGHTS_NEGATIVE_MESSAGE.format(value=weights))
-        else:
-            self.weights = weights
+        
+        self.weights = weights
+        self.check_weights_input()
 
         self.n_samples = self.time_window*self.sample_rate
 
@@ -75,8 +63,8 @@ class OfflineAnalysisANS:
         self.raw_data = pd.read_csv(self.data_path)
         self.raw_data.columns = ["TIME", "ECG", "GSR", "RESP"]
 
-
-    def change_weights(self, weights: dict = {'ECG': 1/3, 'GSR': 1/3, 'RESP': 1/3}):
+    def check_weights_input(self):
+        weights = self.weights
         if not isinstance(weights, dict):
             raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
         elif len(weights) != 3:
@@ -90,7 +78,17 @@ class OfflineAnalysisANS:
         elif not (weights["ECG"] >= 0 and weights["GSR"] >= 0 and weights["RESP"] >= 0):
             raise ValueError(WEIGHTS_NEGATIVE_MESSAGE.format(value=weights))
         else:
-            self.weights = weights
+            print(f"The weights are valid: {weights}")
+            return(True)
+
+    def change_weights(self, new_weights: dict):
+        old_weights = self.weights
+        self.weights = new_weights
+        if not self.check_weights_input():
+            self.weights = old_weights
+            print(f"New weights not valid. Weights remain: {self.weights}")
+        else:
+            self.weights = new_weights
 
     def heart_rate(self):
         '''
