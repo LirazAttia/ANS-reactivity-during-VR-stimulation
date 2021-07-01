@@ -5,8 +5,19 @@ import pandas as pd
 from pathlib import Path
 import neurokit2 as nk
 import heartpy as hp
-
 from pandas.core.frame import DataFrame
+pd.options.mode.use_inf_as_na = True
+
+BAD_TYPE_MESSAGE = "Invalid input: ({value})! Only pathlib.Path and strings are accepted as data_path."
+DIRECTORY_NOT_EXISTING_MESSAGE = "Invalide input: ({value})! Directory doesn't exist."
+HAVE_TO_BE_TUPLE_MESSAGE = "Invalid input: ({value})! Have to be tuple"
+TUPLE_LENGTH_MESSAGE  = "Invalid input: Length mismatch: lenght of tuple must be 3 (not {value})."
+TUPLE_SUM_MESSAGE = "Invalid input: The sum of the values must be 1 (not {value})."
+TUPLE_NEGATIVE_MESSAGE = "Invalid input: ({value})! tuple values must be positive."
+VALUES_ARE_NOT_NUMBERS_MESSAGE = "Invalid input: ({value})! tuple values must be type int or float."
+BAD_SAMPLE_RATE_TYPE_MESSAGE = "Invalid input: ({value})! Only ints are accepted as sample_rate."
+BAD_TIME_WINDOW_TYPE_MESSAGE = "Invalid input: ({value})! Only ints are accepted as time_window."
+BAD_WEIGHTS_TYPE_MESSAGE = "Invalid input: ({value})! Only tuples( , , ) are accepted as weights."
 
 class OfflineAnalysisANS:
     """
@@ -16,12 +27,36 @@ class OfflineAnalysisANS:
     conforms with the larger data processing pipeline of this project.
     """
 
-
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: tuple = (0.333, 0.333, 0.333)):
-        self.data_path = data_path
-        self.sample_rate = sample_rate
-        self.time_window = time_window
-        self.weights = weights
+      
+        pathlib_input = isinstance(data_path, Path)
+        str_input = isinstance(data_path, str)
+        if not (pathlib_input or str_input):
+            raise TypeError(BAD_PATH_TYPE_MESSAGE.format(value=data_path))
+        elif not Path(data_path).exists():
+            raise ValueError(
+                DIRECTORY_NOT_EXISTING_MESSAGE.format(value=data_path))
+        else:
+            self.data_path = data_path
+        
+        sample_rate_int = isinstance(sample_rate, int)
+        if not sample_rate_int:
+            raise TypeError(BAD_SAMPLE_RATE_TYPE_MESSAGE.format(value=sample_rate))
+        else:
+            self.sample_rate = sample_rate
+        
+        time_window_int = isinstance(time_window, int)
+        if not time_window_int:
+            raise TypeError(BAD_TIME_WINDOW_TYPE_MESSAGE.format(value=sample_rate))
+        else:
+            self.time_window = time_window
+
+        weights_tuple = isinstance( weights, tuple)
+        if not weights_tuple:
+            raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
+        else:
+            self.weights = weights
+
         self.n_samples = self.time_window*self.sample_rate
         
     def read_data(self) -> DataFrame:
@@ -29,7 +64,7 @@ class OfflineAnalysisANS:
         parm:
         return:
         """
-        self.raw_data = pd.read_csv(self.path)
+        self.raw_data = pd.read_csv(self.data_path)
 
     
     def heart_rate(self):
@@ -48,9 +83,8 @@ class OfflineAnalysisANS:
                     heart_rate_for_every_chunk[data_chunks] = np.NaN
                 else:
                     heart_rate_for_every_chunk[data_chunks] = heart_rate_for_every_chunk[data_chunks-1]
-     
-        return heart_rate_for_every_chunk
 
+        return heart_rate_for_every_chunk
 
     def resp_rate(self):
         # Extracts breathing rate from raw respiration data
@@ -70,6 +104,7 @@ class OfflineAnalysisANS:
         self.gsr = self.raw_data["GSR"]
 
         self.processed_data = pd.DataFrame(
+<<<<<<< HEAD
             columns=["time", "heart_rate", "resp_rate", "gsr"])
 
         n_samples = self.time_window*self.sample_rate
@@ -78,6 +113,14 @@ class OfflineAnalysisANS:
         self.processed_data["heart_rate"] = self.heart_rate()
         self.processed_data["resp_rate"] = self.resp_rate()
         self.processed_data["gsr"] = self.gsr.groupby(np.arange(len(self.gsr))//n_samples).mean()
+=======
+            columns=["TIME", "ECG", "RESP", "GSR"])
+       
+        self.processed_data["TIME"] = self.time.iloc[0:-1:self.n_samples] #Not sure this is correct, the basic idea is marking each "time-frame" according to start-time
+        self.processed_data["ECG"] = self.heart_rate()
+        self.processed_data["RESP"] = self.resp_rate()
+        self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//self.n_samples).mean()
+>>>>>>> d2abbf6ef0eefd14ce604a3f444866a1063551ec
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
         """ normalazing each column.
@@ -91,29 +134,23 @@ class OfflineAnalysisANS:
         self.normal_data = self.processed_data.copy()
 
 
-    def score_adding(self, wights: tuple = (0.333, 0.333, 0.333)) -> DataFrame:
+    def score_adding(self, wights: tuple = (0.333, 0.333, 0.334)) -> DataFrame:
         """ making an index according to wights.
         parm:
         return:
         """
-        self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] 
-                                        + self.normal_data["GSR"]*wights[1] 
-                                        + self.normal_data["RESP"]*wights[2]
-        self.scored_data = self.normal_data.copy()
+        if not isinstance(wights, tuple):
+            raise TypeError(HAVE_TO_BE_TUPLE_MESSAGE.format(value=wights))
+        elif len(wights) != 3:
+            raise ValueError(TUPLE_LENGTH_MESSAGE.format(value=len(wights)))
+        elif not (isinstance(wights[0], (int, float)) and isinstance(wights[1], (int, float)) and isinstance(wights[2], (int, float))):
+            raise TypeError(VALUES_ARE_NOT_NUMBERS_MESSAGE.format(value=wights))
+        elif sum(list(wights)) != 1:
+            raise ValueError(TUPLE_SUM_MESSAGE.format(value=sum(list(wights))))
+        elif not (wights[0] >=0 and wights[1] >=0 and wights[2] >=0):
+            raise ValueError(TUPLE_NEGATIVE_MESSAGE.format(value=wights))
+        else:
+            self.normal_data["Fear_Index"] = self.normal_data["ECG"]*wights[0] + self.normal_data["GSR"]*wights[1] + self.normal_data["RESP"]*wights[2]
+            self.scored_data = self.normal_data.copy()
 
-
-
-if __name__ == "__main__":
-
-    row_data = read_data(data_path)
-    print("Row data\n",row_data) ######
-    avg_data = averaging_samples(row_data, n_samples_for_averging)
-    print("AVG data\n",avg_data) ######
-    normal_data = normalizing_values(avg_data)
-    print("Normal data\n", normal_data)
-    processed_data = index_adding(normal_data, wights)
-    print("Processed data\n",processed_data)
-
-
-
-
+    #def_plot_stress_score()
