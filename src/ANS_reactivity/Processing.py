@@ -40,6 +40,16 @@ class OfflineAnalysisANS:
     """
     def __init__(self, data_path: str = r"ANS-reactivity-during-VR-stimulation\Data.csv", sample_rate: int = 512, time_window: int = 10, weights: dict = {'ECG': 1/3, 'GSR': 1/3, 'RESP': 1/3}):
 
+        """
+        Initialize our dataset.
+
+        Input:
+        data_path: Directory where our data is
+        sample_rate: The rate at which our data was sampled (samples per second)
+        time_window: How many seconds of data do we want to calculate each time
+        weights: The weight we want to give each measure in the final stress score
+        """
+
         if not (isinstance(data_path, Path) or isinstance(data_path, str)):
             raise TypeError(BAD_PATH_TYPE_MESSAGE.format(value=data_path))
         elif not Path(data_path).exists():
@@ -65,9 +75,14 @@ class OfflineAnalysisANS:
     
 
     def read_data(self) -> DataFrame:
-        """ Pulling and reading the data into Dataframe.
-        parm:
-        return:
+        """ 
+        Pulling and reading the data into Dataframe.
+        
+        Input:
+        self
+
+        Output:
+        Nothing, just reads the data
         """
         self.raw_data = pd.read_csv(self.data_path)
         self.raw_data.columns = ["TIME", "ECG", "GSR", "RESP"]
@@ -81,12 +96,15 @@ class OfflineAnalysisANS:
     def heart_rate(self):
         '''
         This function extracts the heart rate from ECG data.
-        It has no input because it uses the data of the class. 
-        Its output is a numpy array of beats per minute (bpm) for each time_window.
-
         Noisy ECG data that cannot produce a bpm output is ignored,
         and the previous time-window's bpm is refered to instead (unless the noise
         is in the first time window. In that case, the output of the bpm is NaN)
+
+        Input:
+        self
+
+        Output:
+        heart_rate_for_every_chunk: numpy array of beats per minute (bpm) for each time_window.
         '''
 
         number_of_chunks = math.ceil((len(self.ecg))/self.n_samples)
@@ -114,13 +132,13 @@ class OfflineAnalysisANS:
                 else:
                     heart_rate_for_every_chunk[data_chunks] = heart_rate_for_every_chunk[data_chunks-1]
 
-        return (heart_rate_for_every_chunk)
+        return heart_rate_for_every_chunk
 
     def resp_rate(self) -> pd.DataFrame:
         """
         Extracts breathing rate from raw respiration data
 
-        Recieves: 
+        Input: 
         self
 
         Output:
@@ -132,9 +150,15 @@ class OfflineAnalysisANS:
         return rsp_rate_avg
 
     def process_samples(self) -> DataFrame:
-        """ averaging serval sampels in each column.
-        param:
-        returns:
+        """ 
+        Processes each measure appropriately, 
+        then collects all the processed data into one DataFrame.
+
+        Input:
+        self
+
+        Output:
+        None, just creates the new DataFrame.
         """
         self.time = self.raw_data["TIME"]
         self.ecg = self.raw_data["ECG"]
@@ -150,9 +174,14 @@ class OfflineAnalysisANS:
         self.processed_data["GSR"] = self.gsr.groupby(np.arange(len(self.gsr))//self.n_samples).mean().reset_index(drop=True)
 
     def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"]) -> DataFrame:
-        """ normalazing each column.
-        parm:
-        return:
+        """ 
+        Normalizes each column of data.
+        
+        Input:
+        self
+
+        Output:
+        None, just normalizes the data
         """
         for column in columns_list:
             min = self.processed_data[column].min()
@@ -170,6 +199,9 @@ class OfflineAnalysisANS:
 
     """
     def check_weights_input(self):
+        """
+        Simple input check for parameter weights
+        """
         weights = self.weights
         if not isinstance(weights, dict):
             raise TypeError(BAD_WEIGHTS_TYPE_MESSAGE.format(value=weights))
@@ -188,6 +220,16 @@ class OfflineAnalysisANS:
             return(True)
 
     def change_weights(self, new_weights: dict):
+        """
+        Allows the user to reconfigure the weight of each parameter in the final stress score.
+        
+        Input:
+        self
+        weights - a dictionary of 3 keys, named "ECG", "GSR", "RESP". Each value must be a positive integer or float, that sum up to 1.
+        
+        Output:
+        None, just reconfigures the weights
+        """
         old_weights = self.weights
         self.weights = new_weights
         if not self.check_weights_input():
@@ -197,15 +239,30 @@ class OfflineAnalysisANS:
             self.weights = new_weights
 
     def score_adding(self):
-        """ making an index according to wights.
-        parm:
-        return:
+        """ 
+        Generating an index from our different parameters 
+        (Heart Rate, GSR, Respiration Rate) according to set weights.
+
+        Input:
+        Self
+
+        Output:
+        Nothing, just creates the score as an attribute
         """
         self.normal_data["Stress_Score"] = self.normal_data["ECG"]*self.weights["ECG"] + self.normal_data["GSR"]*self.weights["GSR"] + self.normal_data["RESP"]*self.weights["RESP"]
         self.scored_data = self.normal_data.copy()
 
     def plot_score(self):
-        """ 
+        """
+        Plots the Stress Score calculated in each sample.
+        The X axis displays the number of total samples, which depend on the time_window - 
+        the longer the time_window, the fewer samples there are.
+        
+        Input:
+        self
+
+        Output:
+        Returns nothing, but displays the plot
         """
         self.scored_data["Stress_Score"].plot()
         plt.title("Score")
