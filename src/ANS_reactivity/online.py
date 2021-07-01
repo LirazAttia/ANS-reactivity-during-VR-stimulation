@@ -1,4 +1,4 @@
-from Processing import OfflineAnalysisANS
+from offline_processing import OfflineAnalysisANS
 
 class OnlineAnalysisANS(OfflineAnalysisANS):
 
