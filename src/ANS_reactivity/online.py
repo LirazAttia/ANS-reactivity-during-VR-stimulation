@@ -1,4 +1,4 @@
-from Processing import OfflineAnalysisANS
+from offline_processing import OfflineAnalysisANS
 
 class OnlineAnalysisANS(OfflineAnalysisANS):
 
@@ -25,23 +25,3 @@ class OnlineAnalysisANS(OfflineAnalysisANS):
         
         self.current_sample_data.to_csv('current_time_window_data.csv')
         return self.current_sample_data
-
-    def read_data(self):
-        self.raw_data = super().read_data(current_time_window_data)
-
-    def heart_rate(self):
-        heart_rate_for_every_chunk = super().heart_rate()
-
-    def process_samples(self):
-        self.processed_data = super().processed_data()
-
-    def normalizing_values(self, columns_list=["ECG", "GSR", "RESP"])
-        self.normal_data = super().normalizing_values()
-
-    def score_adding(self):
-        self.scored_data = super().score_adding()
-
-    def resp_rate(self) -> pd.DataFrame:
-        rsp_rate_avg = super().resp_rate()
-
-    
