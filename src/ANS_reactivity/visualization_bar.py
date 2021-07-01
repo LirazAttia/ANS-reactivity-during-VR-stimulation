@@ -47,7 +47,7 @@ x_width = 20
 data_range = 1200
 start_sample = 20
 bar_colors = ["r", "k", "g", "b"]
-labels = ["ECG", "GSR", "RESP" , "Stress_Score"]
+labels = ["ECG", "GSR", "RESP", "Stress_Score"]
 fear_values = [0.5, 0.5, 0.5, 0.5]
 x = np.arange(len(labels))
 width = 0.35
@@ -56,11 +56,12 @@ width = 0.35
 if __name__ == "__main__":
     data = OfflineAnalysisANS(data_path = r"C:\Users\Anthony\Desktop\Hackathon\ANS-reactivity-during-VR-stimulation\Data.csv")
     data.read_data()
-    data.process_samples()
-    data.normalizing_values()
-    data.score_adding()
+    #data.process_samples()
+    #data.normalizing_values()
+    #data.score_adding()
     #data.scored_data()
-    print(data.processed_data["GSR"])
+    #print(data.processed_data["GSR"])
+    bar_data = data.raw_data
 
 
     plt.ion()
@@ -69,12 +70,11 @@ if __name__ == "__main__":
     plot_me()
     ax.bar_label(rects1)
 
-    input("wait...")
     for i in range(1000):
-        real_time_data = data.scored_data.iloc[i, :]
+        real_time_data = bar_data.iloc[i, :]
         print(real_time_data)
         plt.cla()
-        fear_values = [real_time_data["ECG"], real_time_data["GSR"], real_time_data["RESP"], real_time_data["Stress_Score"]]
+        fear_values = [real_time_data["ECG"], real_time_data["GSR"], real_time_data["RESP"]], real_time_data["Stress_Score"]]
         rects1 = ax.bar(x - width/2, fear_values, width, label='Stress_Score', color = bar_colors)
         plot_me()
         fig.canvas.draw()
