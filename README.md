@@ -19,5 +19,5 @@ This resipetory includes few files that you'll need to have before you start ana
 
 # Usage
 Below is an example of the minimal usage flow requiered for recieving a result:
-![image](https://user-images.githubusercontent.com/80268425/124131136-2a98da80-da88-11eb-955e-5ae613510586.png)
+![image](https://user-images.githubusercontent.com/80268425/124131773-cb879580-da88-11eb-9237-afbf24428b61.png)
 ![Figure_1](https://user-images.githubusercontent.com/80268425/124130351-5798bd80-da87-11eb-9acb-3b74b36ad556.png)
